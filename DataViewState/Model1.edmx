@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="DataViewStateModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="DataViewStateModelStoreContainer">
+          <EntitySet Name="DataViewStateRows" EntityType="DataViewStateModel.Store.DataViewStateRows" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="DataViewStateSession" EntityType="DataViewStateModel.Store.DataViewStateSession" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="DataViewStateSet" EntityType="DataViewStateModel.Store.DataViewStateSet" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_DataViewStateRows_DataViewStateSet" Association="DataViewStateModel.Store.FK_DataViewStateRows_DataViewStateSet">
+            <End Role="DataViewStateSet" EntitySet="DataViewStateSet" />
+            <End Role="DataViewStateRows" EntitySet="DataViewStateRows" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DataViewStateSet_DataViewStateSession" Association="DataViewStateModel.Store.FK_DataViewStateSet_DataViewStateSession">
+            <End Role="DataViewStateSession" EntitySet="DataViewStateSession" />
+            <End Role="DataViewStateSet" EntitySet="DataViewStateSet" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="DataViewStateRows">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SetID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DataRow" Type="xml" Nullable="false" />
+          <Property Name="Order" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataViewStateSession">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ExpireOn" Type="datetime" Nullable="false" />
+          <Property Name="SlidingExpire" Type="int" />
+        </EntityType>
+        <EntityType Name="DataViewStateSet">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SessionID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Path" Type="nvarchar" Nullable="false" MaxLength="1024" />
+          <Property Name="ExpireOn" Type="datetime" Nullable="false" />
+          <Property Name="SlidingExpire" Type="int" />
+          <Property Name="Columns" Type="xml" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_DataViewStateRows_DataViewStateSet">
+          <End Role="DataViewStateSet" Type="DataViewStateModel.Store.DataViewStateSet" Multiplicity="1" />
+          <End Role="DataViewStateRows" Type="DataViewStateModel.Store.DataViewStateRows" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataViewStateSet">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DataViewStateRows">
+              <PropertyRef Name="SetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DataViewStateSet_DataViewStateSession">
+          <End Role="DataViewStateSession" Type="DataViewStateModel.Store.DataViewStateSession" Multiplicity="1" />
+          <End Role="DataViewStateSet" Type="DataViewStateModel.Store.DataViewStateSet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataViewStateSession">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DataViewStateSet">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="GetElementValues" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SetID" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Namespaces" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="DbType" Type="nvarchar" Mode="In" />
+        </Function>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DataViewStateModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="DataViewStateEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="DataViewStateRows" EntityType="DataViewStateModel.DataViewStateRow" />
+          <EntitySet Name="DataViewStateSessions" EntityType="DataViewStateModel.DataViewStateSession" />
+          <EntitySet Name="DataViewStateSets" EntityType="DataViewStateModel.DataViewStateSet" />
+          <AssociationSet Name="FK_DataViewStateRows_DataViewStateSet" Association="DataViewStateModel.FK_DataViewStateRows_DataViewStateSet">
+            <End Role="DataViewStateSet" EntitySet="DataViewStateSets" />
+            <End Role="DataViewStateRows" EntitySet="DataViewStateRows" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DataViewStateSet_DataViewStateSession" Association="DataViewStateModel.FK_DataViewStateSet_DataViewStateSession">
+            <End Role="DataViewStateSession" EntitySet="DataViewStateSessions" />
+            <End Role="DataViewStateSet" EntitySet="DataViewStateSets" />
+          </AssociationSet>
+          <FunctionImport Name="GetElementValues" ReturnType="Collection(DataViewStateModel.GetElementValues_Result)">
+            <Parameter Name="SetID" Mode="In" Type="Guid" />
+            <Parameter Name="Namespaces" Mode="In" Type="String" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="DbType" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <EntityType Name="DataViewStateRow">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="SetID" Type="Guid" Nullable="false" />
+          <Property Name="DataRow" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="Order" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="DataViewStateSet" Relationship="DataViewStateModel.FK_DataViewStateRows_DataViewStateSet" FromRole="DataViewStateRows" ToRole="DataViewStateSet" />
+        </EntityType>
+        <EntityType Name="DataViewStateSession">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="ExpireOn" Type="DateTime" Nullable="false" />
+          <Property Name="SlidingExpire" Type="Int32" />
+          <NavigationProperty Name="DataViewStateSets" Relationship="DataViewStateModel.FK_DataViewStateSet_DataViewStateSession" FromRole="DataViewStateSession" ToRole="DataViewStateSet" />
+        </EntityType>
+        <EntityType Name="DataViewStateSet">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="SessionID" Type="Guid" Nullable="false" />
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="1024" Unicode="true" FixedLength="false" />
+          <Property Name="ExpireOn" Type="DateTime" Nullable="false" />
+          <Property Name="SlidingExpire" Type="Int32" />
+          <Property Name="Columns" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="DataViewStateRows" Relationship="DataViewStateModel.FK_DataViewStateRows_DataViewStateSet" FromRole="DataViewStateSet" ToRole="DataViewStateRows" />
+          <NavigationProperty Name="DataViewStateSession" Relationship="DataViewStateModel.FK_DataViewStateSet_DataViewStateSession" FromRole="DataViewStateSet" ToRole="DataViewStateSession" />
+        </EntityType>
+        <Association Name="FK_DataViewStateRows_DataViewStateSet">
+          <End Role="DataViewStateSet" Type="DataViewStateModel.DataViewStateSet" Multiplicity="1" />
+          <End Role="DataViewStateRows" Type="DataViewStateModel.DataViewStateRow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataViewStateSet">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DataViewStateRows">
+              <PropertyRef Name="SetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DataViewStateSet_DataViewStateSession">
+          <End Role="DataViewStateSession" Type="DataViewStateModel.DataViewStateSession" Multiplicity="1" />
+          <End Role="DataViewStateSet" Type="DataViewStateModel.DataViewStateSet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataViewStateSession">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DataViewStateSet">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="GetElementValues_Result">
+          <Property Type="Guid" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Value" Nullable="true" />
+          <Property Type="Int32" Name="Order" Nullable="false" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DataViewStateModelStoreContainer" CdmEntityContainer="DataViewStateEntities">
+          <EntitySetMapping Name="DataViewStateRows">
+            <EntityTypeMapping TypeName="DataViewStateModel.DataViewStateRow">
+              <MappingFragment StoreEntitySet="DataViewStateRows">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="SetID" ColumnName="SetID" />
+                <ScalarProperty Name="DataRow" ColumnName="DataRow" />
+                <ScalarProperty Name="Order" ColumnName="Order" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataViewStateSessions">
+            <EntityTypeMapping TypeName="DataViewStateModel.DataViewStateSession">
+              <MappingFragment StoreEntitySet="DataViewStateSession">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="ExpireOn" ColumnName="ExpireOn" />
+                <ScalarProperty Name="SlidingExpire" ColumnName="SlidingExpire" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataViewStateSets">
+            <EntityTypeMapping TypeName="DataViewStateModel.DataViewStateSet">
+              <MappingFragment StoreEntitySet="DataViewStateSet">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="ExpireOn" ColumnName="ExpireOn" />
+                <ScalarProperty Name="SlidingExpire" ColumnName="SlidingExpire" />
+                <ScalarProperty Name="Columns" ColumnName="Columns" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetElementValues" FunctionName="DataViewStateModel.Store.GetElementValues">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataViewStateModel.GetElementValues_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Order" ColumnName="Order" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="Model1">
+        <EntityTypeShape EntityType="DataViewStateModel.DataViewStateRow" Width="1.5" PointX="5.25" PointY="1.25" Height="1.9802864583333335" IsExpanded="true" />
+        <EntityTypeShape EntityType="DataViewStateModel.DataViewStateSession" Width="1.5" PointX="0.75" PointY="1.375" Height="1.7879850260416674" IsExpanded="true" />
+        <EntityTypeShape EntityType="DataViewStateModel.DataViewStateSet" Width="1.5" PointX="3" PointY="1" Height="2.5571907552083335" IsExpanded="true" />
+        <AssociationConnector Association="DataViewStateModel.FK_DataViewStateRows_DataViewStateSet" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.5" PointY="2.2401432291666667" />
+          <ConnectorPoint PointX="5.25" PointY="2.2401432291666667" />
+        </AssociationConnector>
+        <AssociationConnector Association="DataViewStateModel.FK_DataViewStateSet_DataViewStateSession" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="2.2689925130208337" />
+          <ConnectorPoint PointX="3" PointY="2.2689925130208337" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
